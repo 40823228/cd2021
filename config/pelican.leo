@@ -121,7 +121,7 @@ Flutter
 
 Flutter 可以用來開發跨 Apple 與 Android 手機與平板上的 Apps
 
-.</t>
+..</t>
 <t tx="yen.20170108171605.1"></t>
 <t tx="yen.20170108171605.2">QTreeWidget {
     /* These apply to the selected item, but not to editing items.*/
