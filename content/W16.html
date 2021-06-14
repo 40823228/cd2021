@@ -133,12 +133,293 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">W4 報告和彩現圖 << <a href='W4 報告和彩現圖.html'>Previous</a> <a href='Stage2 進度.html'>Next</a> >> Stage2 進度<br /><h1>心得和PDF檔案</h1>
-<h4>心得:</h4>
-<h4>這次的協同產品設計的前四周是採取二人分組，因為剛接觸協同產品設計，所以在各項作業上都有一定的陌生，不過隨著討論次數的增加，也越來越上手，這次的分組專題讓我體會到如果用傳統的開會討論，肯定會耗費更多的時間，所以接下來的四人小組、八人小組，如果工作分配得宜的話，一定可以創造更有價值性的產品。</h4>
-<p><a href="https://drive.google.com/file/d/1Y83VGGkDXYSVAEIbtm2EjOc9-7odPcu2/view?usp=sharing">PDF檔案下載</a></p>
-<p><span></span></p>
-<br />W4 報告和彩現圖 << <a href='W4 報告和彩現圖.html'>Previous</a> <a href='Stage2 進度.html'>Next</a> >> Stage2 進度</div>
+    <div id="tipue_search_content">Task3 << <a href='Task3.html'>Previous</a> <br /><h1>W16</h1>
+<p>W16 exam <a href="https://drive.google.com/file/d/1vHH4IYVt42KXmYx4Q4ezM3JljKFly4JW/view?usp=sharing">檔案下載</a></p>
+<h4>1. Onshape 零組件繪製<span> </span></h4>
+<p>零件繪製過程  <a href="https://youtu.be/gC4CtrGMzL8">Onshape檔案連結</a></p>
+<p><iframe allowfullscreen="allowfullscreen" height="314" src="//www.youtube.com/embed/gC4CtrGMzL8" width="560"></iframe></p>
+<h4>2. 建立 CoppeliaSim 4.1.0 MTB robot 場景</h4>
+<p><a href="https://drive.google.com/file/d/1vHH4IYVt42KXmYx4Q4ezM3JljKFly4JW/view?usp=sharing">檔案下載</a></p>
+<p><iframe allowfullscreen="allowfullscreen" height="314" src="//www.youtube.com/embed/K_G285CS8xU" width="560"></iframe><iframe allowfullscreen="allowfullscreen" height="314" src="//www.youtube.com/embed/1i2gq5thR4s" width="560"></iframe>程式:</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function sysCall_init()
+    joint01=sim.getObjectHandle('joint1')
+    joint02=sim.getObjectHandle('joint2')
+    joint03=sim.getObjectHandle('joint3')
+    jointz=sim.getObjectHandle('jointz')
+    sim.setJointTargetPosition(joint01,0)
+    sim.setJointTargetPosition(joint02,0)
+    sim.setJointTargetPosition(joint03,0)
+    sim.setJointTargetPosition(jointz,0)
+    deg1=0
+    deg2=0
+    deg3=0
+end
+
+function sysCall_actuation()
+    message,auxiliaryData=sim.getSimulatorMessage()
+    while message~=-1 do
+        if (message==sim.message_keypress) then
+            if (auxiliaryData[1]==2009) then
+            deg1=deg1+1
+            deg3=deg2-deg1
+            sim.setJointTargetPosition(joint01,deg1*math.pi/180)
+            end
+            if (auxiliaryData[1]==2010) then
+            deg1=deg1-1
+            deg3=deg2-deg1
+            sim.setJointTargetPosition(joint01,deg1*math.pi/180)
+            end
+            if (auxiliaryData[1]==2007) then
+            deg2=deg2+1
+            deg3=deg1-deg2
+            sim.setJointTargetPosition(joint02,deg2*math.pi/180)
+            end
+            if (auxiliaryData[1]==2008) then
+            deg2=deg2-1
+            deg3=deg1-deg2
+            sim.setJointTargetPosition(joint02,deg2*math.pi/180)
+            end
+            if (auxiliaryData[1]==115) then
+                   sim.setJointTargetPosition(jointz,-0.02)
+                   sim.setIntegerSignal('pad_switch',1)
+                end
+            if (auxiliaryData[1]==119) then
+                   sim.setJointTargetPosition(jointz,0)
+                end
+            if (auxiliaryData[1]==32) then
+                   sim.setIntegerSignal('pad_switch',0)
+                end
+        end
+    message,auxiliaryData=sim.getSimulatorMessage()
+    end        
+end
+
+function sysCall_sensing()
+    -- put your sensing code here
+end
+
+function sysCall_cleanup()
+    -- do some clean-up here
+
+
+-- See the user manual or the available code snippets for additional callback functions and details
+   end</pre>
+<h4>3. 手臂末端加入 components-gripper-suction pad 吸盤</h4>
+<p><iframe allowfullscreen="allowfullscreen" height="314" src="//www.youtube.com/embed/B48UXHyOQNI" width="560"></iframe>程式:</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function sysCall_init() 
+    --this is teach by 40823214
+    objectHandle=sim.getObjectHandle('suctionPad')
+    sim.setUserParameter(objectHandle,'@enable','')
+    modelBase=sim.getObjectAssociatedWithScript(sim.handle_self)
+    robotBase=modelBase
+    while true do
+        robotBase=sim.getObjectParent(robotBase)
+        if robotBase==-1 then
+            robotName='Dobot'
+            break
+        end
+        robotName=sim.getObjectName(robotBase)
+        suffix,suffixlessName=sim.getNameSuffix(robotName)
+        if suffixlessName=='Dobot' then
+            break
+        end
+    end
+
+    s=sim.getObjectHandle('suctionPadSensor')
+    l=sim.getObjectHandle('suctionPadLoopClosureDummy1')
+    l2=sim.getObjectHandle('suctionPadLoopClosureDummy2')
+    b=sim.getObjectHandle('suctionPad')
+    suctionPadLink=sim.getObjectHandle('suctionPadLink')
+    local gripperBase=sim.getObjectAssociatedWithScript(sim.handle_self)
+
+    infiniteStrength=sim.getScriptSimulationParameter(sim.handle_self,'infiniteStrength')
+    maxPullForce=sim.getScriptSimulationParameter(sim.handle_self,'maxPullForce')
+    maxShearForce=sim.getScriptSimulationParameter(sim.handle_self,'maxShearForce')
+    maxPeelTorque=sim.getScriptSimulationParameter(sim.handle_self,'maxPeelTorque')
+
+    sim.setLinkDummy(l,-1)
+    sim.setObjectParent(l,b,true)
+    m=sim.getObjectMatrix(l2,-1)
+    sim.setObjectMatrix(l,-1,m)
+end
+
+function sysCall_cleanup() 
+    --this is teach by 40823214
+    sim.setLinkDummy(l,-1)
+    sim.setObjectParent(l,b,true)
+    m=sim.getObjectMatrix(l2,-1)
+    sim.setObjectMatrix(l,-1,m)
+end 
+
+function sysCall_sensing() 
+    parent=sim.getObjectParent(l)
+    --this is teach by 40823214
+    local sig=sim.getIntegerSignal("pad_switch")
+    if (not sig) or (sig==0) then
+        if (parent~=b) then
+            sim.setLinkDummy(l,-1)
+            sim.setObjectParent(l,b,true)
+            m=sim.getObjectMatrix(l2,-1)
+            sim.setObjectMatrix(l,-1,m)
+        end
+    else
+        if (parent==b) then
+            index=0
+            while true do
+                shape=sim.getObjects(index,sim.object_shape_type)
+                if (shape==-1) then
+                    break
+                end
+                local res,val=sim.getObjectInt32Parameter(shape,sim.shapeintparam_respondable)
+                if (shape~=b) and (val~=0) and (sim.checkProximitySensor(s,shape)==1) then
+                    -- Ok, we found a respondable shape that was detected
+                    -- We connect to that shape:
+                    -- Make sure the two dummies are initially coincident:
+                    sim.setObjectParent(l,b,true)
+                    m=sim.getObjectMatrix(l2,-1)
+                    sim.setObjectMatrix(l,-1,m)
+                    -- Do the connection:
+                    sim.setObjectParent(l,shape,true)
+                    sim.setLinkDummy(l,l2)
+                    break
+                end
+                index=index+1
+            end
+        else
+            -- Here we have an object attached
+            if (infiniteStrength==false) then
+                -- We might have to conditionally beak it apart!
+                result,force,torque=sim.readForceSensor(suctionPadLink) -- Here we read the median value out of 5 values (check the force sensor prop. dialog)
+                if (result&gt;0) then
+                    breakIt=false
+                    if (force[3]&gt;maxPullForce) then breakIt=true end
+                    sf=math.sqrt(force[1]*force[1]+force[2]*force[2])
+                    if (sf&gt;maxShearForce) then breakIt=true end
+                    if (torque[1]&gt;maxPeelTorque) then breakIt=true end
+                    if (torque[2]&gt;maxPeelTorque) then breakIt=true end
+                    if (breakIt) then
+                        -- We break the link:
+                        sim.setLinkDummy(l,-1)
+                        sim.setObjectParent(l,b,true)
+                        m=sim.getObjectMatrix(l2,-1)
+                        sim.setObjectMatrix(l,-1,m)
+                    end
+                end
+            end
+        end
+    end
+end 
+--by 40823214</pre>
+<p>由 <a href="https://www.youtube.com/watch?v=gZd9KlVS9BI">40823214</a> 林厚宇教學</p>
+<h4>4. 逆向運動學函式</h4>
+<p><iframe allowfullscreen="allowfullscreen" height="314" src="//www.youtube.com/embed/qejBlwCraiU" width="560"></iframe>程式:</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function moving(x,y)
+    a=0.4
+    b=0.4
+    c=math.pow((math.pow(x,2)+math.pow(y,2)),0.5)
+    s=(a+b+c)/2
+    area=math.pow((s*(s-a)*(s-b)*(s-c)),0.5)
+    h=area/(2*c)
+    deg1_base=math.atan(x/y)
+    if x&lt;0 and y&lt;0 then
+        deg1_base=deg1_base+math.pi
+    end
+    deg1_tri=math.asin(h/a)
+    deg1=deg1_base+deg1_tri
+    deg2=math.pi-(0.5*math.pi-deg1_tri)-math.acos(h/b)
+    deg3=deg2-deg1
+    sim.setJointTargetPosition(joint01,deg1)
+    sim.setJointTargetPosition(joint02,-deg2)
+    sim.setJointTargetPosition(joint03,deg3)
+end
+
+
+function sysCall_threadmain()
+    joint01=sim.getObjectHandle('joint1')
+    joint02=sim.getObjectHandle('joint2')
+    joint03=sim.getObjectHandle('joint3')
+    jointz=sim.getObjectHandle('jointz')
+    sim.setJointTargetPosition(joint01,0)
+    sim.setJointTargetPosition(joint02,0)
+    sim.setJointTargetPosition(joint03,0)
+    sim.setJointTargetPosition(jointz,0)
+    sim.setIntegerSignal("pad_switch",1)
+    sim.setJointTargetPosition(jointz,-0.02)
+    sim.wait(5)
+    sim.setJointTargetPosition(jointz,0)
+    while sim.getSimulationState()~=sim.simulation_advancing_abouttostopre do
+    moving(0.2,0.7)
+    sim.wait(5)
+    sim.setIntegerSignal("pad_switch",0)
+    sim.wait(5)
+    sim.setIntegerSignal("pad_switch",1)
+    sim.setJointTargetPosition(jointz,-0.1)
+    sim.wait(5)
+    sim.setJointTargetPosition(jointz,0)
+    sim.wait(5)
+    moving(-0.3,-0.55)
+    sim.wait(2)
+    sim.setIntegerSignal("pad_switch",0)
+    sim.wait(5)
+    sim.setIntegerSignal("pad_switch",1)
+    sim.setJointTargetPosition(jointz,-0.1)
+    sim.wait(5)
+    sim.setJointTargetPosition(jointz,0)
+    sim.wait(5)
+    end
+
+end
+
+function sysCall_cleanup()
+    -- Put some clean-up code here
+end
+
+-- See the user manual or the available code snippets for additional callback functions and details
+</pre>
+<h4>5. Python remote API 逆向運動學函式</h4>
+<p><iframe allowfullscreen="allowfullscreen" height="314" src="//www.youtube.com/embed/paSHZF8h5NQ" width="560"></iframe>程式:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">import sim as vrep
+import math
+import random
+import time
+import math
+
+
+print ('Start')
+ 
+vrep.simxFinish(-1)
+ 
+clientID = vrep.simxStart('127.0.0.1', 19997, True, True, 5000, 5)
+  
+if clientID != -1:
+    print ('Connected to remote API server')
+      
+    res = vrep.simxAddStatusbarMessage(
+        clientID, "This is teach by 40823214",
+        vrep.simx_opmode_oneshot)
+    if res not in (vrep.simx_return_ok, vrep.simx_return_novalue_flag):
+        print("Could not add a message to the status bar.")
+  
+     
+    opmode = vrep.simx_opmode_oneshot_wait
+    STREAMING = vrep.simx_opmode_streaming 
+  
+     
+    vrep.simxStartSimulation(clientID, opmode)
+    ret,joint01=vrep.simxGetObjectHandle(clientID,"joint1",opmode)
+    ret,joint02=vrep.simxGetObjectHandle(clientID,"joint2",opmode)
+    ret,joint03=vrep.simxGetObjectHandle(clientID,"joint3",opmode)
+    ret,jointz=vrep.simxGetObjectHandle(clientID,"jointz",opmode)
+       
+    vrep.simxSetJointTargetPosition(clientID,joint01,0,opmode)
+    vrep.simxSetJointTargetPosition(clientID,joint02,0,opmode)
+    vrep.simxSetJointTargetPosition(clientID,joint03,0,opmode)
+    vrep.simxSetIntegerSignal(clientID,"pad_switch",1,opmode)
+    vrep.simxSetJointTargetPosition(clientID,jointz,-0.015,opmode)
+    time. sleep(1)
+    vrep.simxSetJointTargetPosition(clientID,jointz,0,opmode)</pre>
+<p>心得感想</p>
+<p>很感謝40823214林厚宇，花費許多時間來教導大家關於CoppeliaSim及相關程式基礎，如果沒有他的話，我應該很難完成這項任務，而在進行任務的同時，我也學到了很多，也對程式跟CoppeliaSim更加熟悉了解了。</p><br />Task3 << <a href='Task3.html'>Previous</a> </div>
         
     <!-- footer -->
       <div class="container">
