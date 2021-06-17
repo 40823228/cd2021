@@ -399,8 +399,9 @@ robot.MoveJ([0,0,0,0,10,-200])
 <h2>W16 模擬</h2>
 <p>經過W15的討論之後，要新增機械手臂抓取障礙物，使攀爬機模擬攀爬。(測試中)</p>
 <h1>問題</h1>
-<h2>缺少Python.exe (3.9.1) 啟動時所對應呼叫的特定 Windows 系統 dll 檔案(正在嘗試解決)</h2>
+<h2>缺少Python.exe (3.9.1) 啟動時所對應呼叫的特定 Windows 系統 dll 檔案</h2>
 <p><span>Python.exe (3.9.1) 啟動時所對應呼叫的特定 Windows 系統 dll 檔案, 無法正確連結, 但具體原因或處理方法可能要再深入查找</span></p>
+<p><span>最後的解決方法: <span style="color: #993300;">電腦重灌 </span></span></p>
 <h2>CMSIMDE版本錯誤</h2>
 <p><span>進入倉儲 =&gt; Fork</span></p>
 <p><span><img alt="" height="225" src="/images/C1.jpg" width="400"/></span></p>
@@ -548,6 +549,7 @@ print(output)
 <p></p>
 <h1>Task3</h1>
 <h1>W16</h1>
+<p>W16 exam <a href="https://drive.google.com/file/d/1vHH4IYVt42KXmYx4Q4ezM3JljKFly4JW/view?usp=sharing">檔案下載</a></p>
 <h4>1. Onshape 零組件繪製<span> </span></h4>
 <p>零件繪製過程  <a href="https://youtu.be/gC4CtrGMzL8">Onshape檔案連結</a></p>
 <p><iframe allowfullscreen="allowfullscreen" height="314" src="//www.youtube.com/embed/gC4CtrGMzL8" width="560"></iframe></p>
@@ -830,5 +832,6 @@ if clientID != -1:
     vrep.simxSetIntegerSignal(clientID,"pad_switch",1,opmode)
     vrep.simxSetJointTargetPosition(clientID,jointz,-0.015,opmode)
     time. sleep(1)
-    vrep.simxSetJointTargetPosition(clientID,jointz,0,opmode)</pre><p>心得感想</p>
+    vrep.simxSetJointTargetPosition(clientID,jointz,0,opmode)</pre>
+<p>心得感想</p>
 <p>很感謝40823214林厚宇，花費許多時間來教導大家關於CoppeliaSim及相關程式基礎，如果沒有他的話，我應該很難完成這項任務，而在進行任務的同時，我也學到了很多，也對程式跟CoppeliaSim更加熟悉了解了。</p>
